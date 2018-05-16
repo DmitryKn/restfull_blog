@@ -20,15 +20,41 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 
 //===ROUTES
+//index
 app.get("/", (req, res) => {
   res.redirect("/blogs")
 })
+//all blogs
 app.get("/blogs", (req, res) => {
   Blog.find({}, (err, blogs) => {
     if(err){
       console.log("ops error");
     } else {
       res.render("index", {blogs: blogs})
+    }
+  })
+})
+//new blog
+app.get("/blogs/new", (req, res) => { // NEW item form
+  res.render('new')
+})
+app.post("/blogs", (req, res) => {
+  var data = req.body.blog
+  Blog.create(data, (err, blog) => {
+    if(err){
+      console.log("ERROR");
+    } else {
+      res.redirect("/blogs")
+    }
+  })
+})
+//show id
+app.get("/blogs/:id", (req, res) => {
+  Blog.findById(req.params.id, (err, foundBlog) => {
+    if(err){
+      console.log("ERROR");
+    } else {
+      res.render("show", {blog: foundBlog});
     }
   })
 })
