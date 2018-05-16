@@ -3,27 +3,37 @@ const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
-//=== mongoose db
+//=== MONGOOSE config
 mongoose.connect("mongodb://localhost/blog_app");
 var blogSchema = new mongoose.Schema({
-  name: String,
+  title: String,
   image: String,
-  description: String
+  body: String,
+  created: {type: Date, default: Date.now}
 })
-var Campground = mongoose.model("Camp", blogSchema);
+var Blog = mongoose.model("blog", blogSchema);
 
-//===engine
+
+//===APP config
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 
-//===get
-app.set("view engine", "ejs");
+//===ROUTES
 app.get("/", (req, res) => {
-  res.render("index")
+  res.redirect("/blogs")
+})
+app.get("/blogs", (req, res) => {
+  Blog.find({}, (err, blogs) => {
+    if(err){
+      console.log("ops error");
+    } else {
+      res.render("index", {blogs: blogs})
+    }
+  })
 })
 
-//=== listen
+//=== Listen
 app.listen(3000, () => {
   console.log("Server started. Port 3000");
 })
