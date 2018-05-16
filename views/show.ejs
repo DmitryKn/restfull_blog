@@ -2,10 +2,19 @@
 
 <div class="ui main text container segment">
   <div class="ui huge header"><%= blog.title %></div>
-    <img src="<%= blog.image %>">
-    <p><%= blog.body %></p>
-    <span><%= blog.created %></span>
-    <a href="/blogs/<%= blog._id %>">Read more</a>
+  <div class="ui top attached">
+    <div class="item">
+      <img class="ui centered rounded imag e" src="<%= blog.image %>">
+      <div class="content">
+        <span><%= blog.created.toDateString() %></span>
+      </div>
+      <div class="description">
+        <p><%= blog.body %></p>
+      </div>
+      <a class="ui violet button" href="/blogs/<%= blog._id %>">Read more</a>
+    </div>
+  </div>
+
 </div>
 
 <% include partials/footer %>
