@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
+const expressSanitizer = require('express-sanitizer');
 
 //=== MONGOOSE config
 mongoose.connect("mongodb://localhost/blog_app");
@@ -14,12 +15,12 @@ var blogSchema = new mongoose.Schema({
 })
 var Blog = mongoose.model("blog", blogSchema);
 
-
 //===APP config
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(methodOverride("_method"));
+app.use(expressSanitizer());
 
 //===ROUTES
 //index
@@ -36,11 +37,12 @@ app.get("/blogs", (req, res) => {
     }
   })
 })
-//new blog
+//create a new blog
 app.get("/blogs/new", (req, res) => { // NEW item form
   res.render('new')
 })
 app.post("/blogs", (req, res) => {
+  req.body.blog.body = req.sanitize(req.body.blog.body) //sanitizer
   var data = req.body.blog
   Blog.create(data, (err, blog) => {
     if(err){
@@ -72,6 +74,7 @@ app.get("/blogs/:id/edit", (req, res) => {
 })
 //update
 app.put("/blogs/:id", (req, res) => {
+  req.body.blog.body = req.sanitize(req.body.blog.body) //sanitizer
   Blog.findByIdAndUpdate(req.params.id, req.body.blog, (err, updatedBlog) => {
     if(err){
       console.log(err);
@@ -90,11 +93,6 @@ app.delete("/blogs/:id", (req, res) => {
     }
   })
 })
-
-
-
-
-
 
 //=== Listen
 app.listen(3000, () => {
